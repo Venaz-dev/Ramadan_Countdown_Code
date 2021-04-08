@@ -30,7 +30,6 @@ const getRamadanTimeTable = () => {
 };
 
 const getMinutes = (current, time) => {
-  console.log("running");
   if (current > time) {
     minutes = 60 - current + time;
     if (hours > 0) {
@@ -41,7 +40,6 @@ const getMinutes = (current, time) => {
   } else {
     minutes = time - current;
   }
-  console.log("ran", minutes);
 };
 const getHours = (current, time) => {
   if (current > time) {
@@ -52,6 +50,7 @@ const getHours = (current, time) => {
 };
 
 const calculateTimeLeft = (data) => {
+  startInterval();
   let nd = new Date();
 
   let currentMinutes = nd.getMinutes();
@@ -59,7 +58,6 @@ const calculateTimeLeft = (data) => {
   // let currentHours = 4;
   // let currentMinutes = 20;
 
-  console.log("minute:", currentMinutes, "hours:", currentHours);
   seconds = 60 - nd.getSeconds();
   let nextSehri = data.data[day].timings.Imsak.split(" ");
   nextSehri = nextSehri[0].split(":");
@@ -105,12 +103,6 @@ const calculateTimeLeft = (data) => {
     getMinutes(currentMinutes, parseInt(nextSehri[1]));
     getHours(currentHours, parseInt(nextSehri[0]));
   }
-  setTimeout(() => {
-    countDownInterval = setInterval(() => {
-      countDown();
-    }, 1000);
-    console.log("started");
-  }, 2000);
 };
 
 const animate = (element) => {
@@ -129,13 +121,14 @@ const animate = (element) => {
 };
 
 function countDown() {
-  if (seconds == 50) {
+  if (seconds == 0 && minutes == 0 && hours == 0) {
     animateSeconds();
     clearInterval(countDownInterval);
     startCountDown = false;
     setTimeout(() => {
       calculateTimeLeft(RamadanTimeTable);
     }, 2000);
+    return;
   }
 
   animateSeconds();
@@ -253,11 +246,13 @@ const entryAnimation = () => {
     });
 };
 
+const startInterval = () => {
+  countDownInterval = setInterval(() => {
+    countDown();
+    startCountDown = true;
+  }, 1000);
+};
+
 entryAnimation();
 
 getRamadanTimeTable();
-
-countDownInterval = setInterval(() => {
-  countDown();
-  startCountDown = true;
-}, 1000);
